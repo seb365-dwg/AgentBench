@@ -5,10 +5,11 @@ ENV PYTHONUNBUFFERED=1
 WORKDIR /app
 
 COPY ./src/server/tasks/dbbench/requirements.txt /app/src/server/tasks/dbbench/requirements.txt
+# aiodocker>=0.25 breaks AgentRL's exec call ('int' object has no attribute 'connect'); 0.24.0 is the newest that works.
 RUN --mount=type=cache,target=/root/.cache/pip \
     python -m pip install --upgrade pip && \
     python -m pip install \
-      agentrl-worker \
+      agentrl-worker "aiodocker==0.24.0" \
       -r ./src/server/tasks/dbbench/requirements.txt
 
 COPY ./src/server/tasks/dbbench /app/src/server/tasks/dbbench

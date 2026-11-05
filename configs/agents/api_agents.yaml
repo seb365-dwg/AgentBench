@@ -21,3 +21,18 @@ text-davinci-002:
         body:
             model: "text-davinci-002"
             max_tokens: 512
+
+# Qwen3-8B served from Google Colab through Ollama + a Cloudflare quick tunnel.
+# The tunnel URL changes every time the Colab tunnel cell is re-run -> update `url`.
+qwen3-8b-colab:
+    import: "./openai-chat.yaml"
+    parameters:
+        name: "qwen3-8b-colab"
+        url: "https://YOUR-TUNNEL.trycloudflare.com/v1/chat/completions"
+        headers:
+            Content-Type: application/json
+            Authorization: Bearer ollama
+        body:
+            model: "qwen3:8b"
+            max_tokens: 512
+            reasoning_effort: "none"

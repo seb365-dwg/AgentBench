@@ -1,0 +1,63 @@
+# macOS (Docker Desktop) variant of extra/docker-compose.yml, trimmed to the two tasks
+# that fit a 16 GB laptop: dbbench-std and os-std.
+#
+# Differences from the original (which is written for Linux):
+#   * no `network_mode: host` (on macOS "host" is Docker's hidden VM, not your Mac)
+#   * the controller publishes port 5020 so your Mac can reach http://localhost:5020/api
+#   * workers reach the controller and Redis by service name instead of 172.17.0.1
+#   * alfworld / webshop / knowledgegraph / freebase are left out (RAM, disk, build time)
+#
+# Run from the project root:
+#   docker compose -f extra/docker-compose.mac.yml up -d
+#   docker compose -f extra/docker-compose.mac.yml down
+name: agentbench-fc
+
+services:
+
+  controller:
+    image: jingbh/agentrl-controller:latest
+    container_name: agentrl-controller
+    command:
+      - controller
+    ports:
+      - "5020:5020"
+
+  redis:
+    image: redis:7
+    container_name: redis
+
+  dbbench-std:
+    build:
+      context: ..
+      dockerfile: src/server/tasks/dbbench/Dockerfile
+    command: --controller http://controller:5020/api dbbench-std
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      # MySQL containers started by this worker join this compose network
+      - DBBENCH_STD_PARAMETERS_ENV_OPTIONS_NETWORK_NAME=agentbench-fc_default
+      # Redis lives in the `redis` service, not on 172.17.0.1
+      - DBBENCH_STD_PARAMETERS_ENV_OPTIONS_STATE_OPTIONS_CONNECTION_HOST=redis
+    deploy:
+      mode: replicated
+      replicas: 1
+    depends_on:
+      - controller
+      - redis
+
+  os_interaction-std:
+    build:
+      context: ..
+      dockerfile: src/server/tasks/os_interaction/Dockerfile
+    command: --controller http://controller:5020/api os-std
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - OS_STD_PARAMETERS_ENV_OPTIONS_NETWORK_NAME=agentbench-fc_default
+      - OS_STD_PARAMETERS_ENV_OPTIONS_STATE_OPTIONS_CONNECTION_HOST=redis
+    deploy:
+      mode: replicated
+      replicas: 1
+    depends_on:
+      - controller
+      - redis

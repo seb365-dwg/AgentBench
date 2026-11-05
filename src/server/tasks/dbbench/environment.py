@@ -33,7 +33,7 @@ class DBBenchEnvironmentDelegation(EnvironmentDelegation):
             attrs['Cmd'] = [
                 '--max_connections=2000',
                 '--thread_cache_size=512',
-                '--innodb_buffer_pool_size=32G',
+                '--innodb_buffer_pool_size=1G',
                 '--innodb_buffer_pool_instances=4',
                 '--innodb_file_per_table=1',
                 '--innodb_log_file_size=1G',

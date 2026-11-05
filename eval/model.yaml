@@ -1,0 +1,17 @@
+# ============================================================
+#  EDIT THIS FILE TO SWITCH MODELS. Nothing else needs to change.
+# ============================================================
+
+# The model's API link (must end in /v1). For the Colab/Ollama tunnel this is the
+# trycloudflare.com address printed by the tunnel cell, plus /v1
+url: https://YOUR-TUNNEL.trycloudflare.com/v1
+
+# The model name the server knows it by (Ollama examples: qwen3:8b, qwen3:4b, llama3.1:8b)
+model: qwen3:8b
+
+# API key. Ollama ignores it (any text works). Real providers (OpenAI, Gemini) need a real key.
+api_key: ollama
+
+# true  = turn off "thinking" (Qwen3 only; faster, avoids tunnel timeouts)
+# false = for every other model (Llama, etc.)
+thinking_off: true
